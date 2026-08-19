@@ -2,7 +2,7 @@
 
 Automatically compresses oversized media on-device before Discord uploads it.
 
-Attach a supported file and send it normally. The plugin detects Discord's limit, compresses the file below it, and then uploads it. Two native progress bars show compression and upload progress separately.
+Attach a supported file and send it normally. The plugin detects Discord's limit, compresses the file below it, and then uploads it.
 
 Files never leave your device for compression, and originals are never modified.
 
@@ -56,7 +56,7 @@ Video output is written progressively to browser-managed temporary disk storage 
 ## Limitations
 
 - Codec availability is determined by Discord's bundled Chromium and the operating system. The plugin tries AAC/H.264 and open Opus/VP9/VP8 alternatives before reporting an unsupported codec.
-- Compression must finish before the network upload can begin; the two-stage progress indicator makes that handoff visible.
+- Compression must finish before the network upload can begin.
 - Very long videos may be refused when fitting them would require unusably low quality.
 - Image conversion uses browser canvas APIs and can still require substantial memory for extremely high-resolution images.
 - GIF conversion preserves animation and looping, but extreme reductions may lower its dimensions, color count, and frame rate.

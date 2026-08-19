@@ -1,0 +1,21 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 kolehoenicke
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+.vc-acu-segmented-progress {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 4px;
+}
+
+.vc-acu-progress-stage {
+    min-width: 0;
+    flex: 1 1 50%;
+}
+
+.vc-acu-progress-track {
+    width: 100%;
+}

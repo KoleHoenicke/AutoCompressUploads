@@ -6,6 +6,8 @@ Attach a supported file and send it normally. The plugin detects Discord's limit
 
 Files never leave your device for compression, and originals are never modified.
 
+![Auto Compress Uploads compressing an oversized Discord attachment](assets/banner.png)
+
 ## Install
 
 Custom plugins require a [source-built Vencord](https://docs.vencord.dev/installing/custom-plugins/). Clone this repository directly into Vencord's userplugins folder, then rebuild:

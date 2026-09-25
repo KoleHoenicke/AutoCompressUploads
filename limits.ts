@@ -9,7 +9,7 @@ import { findByCodeLazy } from "@webpack";
 const MEBIBYTE = 1024 * 1024;
 const FALLBACK_LIMIT = 20 * MEBIBYTE;
 
-const getUserMaxFileSize = findByCodeLazy("getUserMaxFileSize", "getGuildMaxFileSize") as (guildId: string | null) => number;
+const getUserMaxFileSize = findByCodeLazy("getUserMaxFileSize", ".getGuild(") as (guildId: string | null) => number;
 
 export function getUploadLimitBytes(guildId: string | null): number {
     try {

@@ -38,7 +38,7 @@ const AUTO_COMPRESSED = Symbol("AutoCompressUploads");
 const COMPRESSION_TASK = Symbol("AutoCompressUploadsTask");
 const TEMP_FILE_CLEANUP = Symbol("AutoCompressUploadsFileCleanup");
 const TEMP_FILE_CLEANUP_TIMER = Symbol("AutoCompressUploadsFileCleanupTimer");
-const PLUGIN_VERSION = "1.0.0";
+const PLUGIN_VERSION = "1.0.1";
 const SAFETY_HEADROOM = 0.04;
 const MAXIMUM_VIDEO_HEIGHT = 1080;
 const MINIMUM_VIDEO_BITRATE = 96_000;
@@ -184,11 +184,21 @@ export default definePlugin({
 
     patches: [
         {
-            // Let supported oversized media enter the normal attachment draft. Unsupported files still use Discord's error.
-            find: "web.filesExceedUploadLimits",
+            // Discord checks file and aggregate limits before creating the attachment draft.
+            // Let compressible oversized media reach Send, where the uploader hook runs.
+            find: "Unexpected mismatch between files and file metadata",
             replacement: {
-                match: /function (\i)\((\i),(\i)\)\{/,
-                replace: "$&if($self.canPreprocessFiles($2,$3))return!1;",
+                match: /if\(\(0,(\i)\.(\i)\)\((\i),(\i)\)\)return void (\i)\((\i),\3\);/,
+                replace: "if((0,$1.$2)($3,$4)&&!$self.canPreprocessFiles($3,$4))return void $5($6,$3);",
+            },
+        },
+        {
+            // The message composer repeats the size check when Send is pressed.
+            // Allow the same supported files through to the uploader's compression hook.
+            find: "attachmentsToUpload=",
+            replacement: {
+                match: /if\(\(0,(\i)\.(\i)\)\((\i),(\i)\?\.id\)\)return\(0,(\i)\.(\i)\)\((\i),\3\),\{shouldClear:!1,shouldRefocus:!1\};/,
+                replace: "if((0,$1.$2)($3,$4?.id)&&!$self.canPreprocessFiles($3,$4?.id))return(0,$5.$6)($7,$3),{shouldClear:!1,shouldRefocus:!1};",
             },
         },
         {

@@ -2,6 +2,8 @@
 
 Automatically compresses oversized media on-device before Discord uploads it.
 
+Version **1.0.2** fixes compatibility with Discord's updated attachment and uploader checks. If supported media is rejected as too large before you press Send, update the plugin and rebuild Vencord using the instructions below. Version 1.0.1 needs this update on current Discord builds.
+
 Attach a supported file and send it normally. The plugin detects Discord's limit, compresses the file below it, and then uploads it.
 
 Files never leave your device for compression, and originals are never modified.

@@ -38,7 +38,7 @@ const AUTO_COMPRESSED = Symbol("AutoCompressUploads");
 const COMPRESSION_TASK = Symbol("AutoCompressUploadsTask");
 const TEMP_FILE_CLEANUP = Symbol("AutoCompressUploadsFileCleanup");
 const TEMP_FILE_CLEANUP_TIMER = Symbol("AutoCompressUploadsFileCleanupTimer");
-const PLUGIN_VERSION = "1.0.1";
+const PLUGIN_VERSION = "1.0.2";
 const SAFETY_HEADROOM = 0.04;
 const MAXIMUM_VIDEO_HEIGHT = 1080;
 const MINIMUM_VIDEO_BITRATE = 96_000;
@@ -188,8 +188,8 @@ export default definePlugin({
             // Let compressible oversized media reach Send, where the uploader hook runs.
             find: "Unexpected mismatch between files and file metadata",
             replacement: {
-                match: /if\(\(0,(\i)\.(\i)\)\((\i),(\i)\)\)return void (\i)\((\i),\3\);/,
-                replace: "if((0,$1.$2)($3,$4)&&!$self.canPreprocessFiles($3,$4))return void $5($6,$3);",
+                match: /if\(\(0,(\i)\.(\i)\)\(\{files:(\i),guildId:(\i)\}\)\)return void (\i)\((\i),\3\);/,
+                replace: "if((0,$1.$2)({files:$3,guildId:$4})&&!$self.canPreprocessFiles($3,$4))return void $5($6,$3);",
             },
         },
         {
@@ -197,17 +197,18 @@ export default definePlugin({
             // Allow the same supported files through to the uploader's compression hook.
             find: "attachmentsToUpload=",
             replacement: {
-                match: /if\(\(0,(\i)\.(\i)\)\((\i),(\i)\?\.id\)\)return\(0,(\i)\.(\i)\)\((\i),\3\),\{shouldClear:!1,shouldRefocus:!1\};/,
-                replace: "if((0,$1.$2)($3,$4?.id)&&!$self.canPreprocessFiles($3,$4?.id))return(0,$5.$6)($7,$3),{shouldClear:!1,shouldRefocus:!1};",
+                match: /if\(\(0,(\i)\.(\i)\)\(\{files:(\i),guildId:(\i)\?\.id\}\)\)return\(0,(\i)\.(\i)\)\((\i),\3\),\{shouldClear:!1,shouldRefocus:!1\};/,
+                replace: "if((0,$1.$2)({files:$3,guildId:$4?.id})&&!$self.canPreprocessFiles($3,$4?.id))return(0,$5.$6)($7,$3),{shouldClear:!1,shouldRefocus:!1};",
             },
         },
         {
-            // Insert local compression into Discord's uploader after Send is pressed and before its size validation.
+            // Insert local compression after cancellation is wired up, before Discord's
+            // size validation. Discord may insert statements or options between them.
             find: "async uploadFiles(",
             replacement: [
                 {
-                    match: /this\._handleStart\(\(\)=>(\i)\.abort\(\)\),(?=!await this\.compressAndCheckFileSize\(\))/,
-                    replace: "$&await $self.compressUploads(this,$1.signal),",
+                    match: /this\._handleStart\(\(\)=>(\i)\.abort\(\)\)([,;])/,
+                    replace: "$&await $self.compressUploads(this,$1.signal)$2",
                 },
                 {
                     // Continue from compression progress instead of resetting the native bar when network upload starts.
